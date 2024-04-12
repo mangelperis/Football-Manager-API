@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+    php-fpm:
+        env_file:
+            - .env
+        container_name: php-fpm
+        #extra_hosts REQUIRED in Linux for xdebug!!
+        extra_hosts:
+            - host.docker.internal:host-gateway
+        #######
+        build:
+            dockerfile: ./docker/php-fpm/Dockerfile
+        volumes:
+            - ${PATH_TO_SYMFONY_PROJECT}:/var/www
+            - ${FPM_LOG_DIR}:/var/log/php-fpm/
+        networks:
+            - fm
+
+    nginx:
+        env_file:
+            - .env
+        container_name: nginx
+        build:
+            context: ./docker/nginx
+        volumes:
+            - ${PATH_TO_SYMFONY_PROJECT}:/var/www
+            - ${NGINX_LOG_DIR}:/var/log/nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            - fm
+    mariadb:
+        container_name: mariadb
+        image: mariadb:11.1.4
+        environment:
+            - MARIADB_ROOT_PASSWORD=${ROOT_PASSWORD}
+            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=0
+            - MARIADB_DATABASE=${DB_NAME}
+        volumes:
+            - ${PATH_TO_DB_DATA}:/var/lib/mysql:rw
+            - ./docker/extras/mariadb.cnf:/etc/mysql/my.cnf
+        ports:
+            - "3306:3306"
+        networks:
+            - fm
+    adminer:
+        env_file:
+            - .env
+        container_name: "adminer"
+        image: adminer
+        ports:
+            - "8080:8080"
+        networks:
+            - fm
+    mailer:
+        env_file:
+            - .env
+        container_name: "mailer"
+        image: schickling/mailcatcher
+        ports:
+            - "1025:1025"
+            - "1080:1080"
+        networks:
+            - fm
+networks:
+    fm:
