@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Infrastructure\Adapter\Repository;
 
 use App\Domain\Entity\Player;
-use App\Instrastructure\Persistence\Doctrine\PlayerRepositoryDoctrineAdapter;
+use App\Infrastructure\Persistence\Doctrine\PlayerRepositoryDoctrineAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;

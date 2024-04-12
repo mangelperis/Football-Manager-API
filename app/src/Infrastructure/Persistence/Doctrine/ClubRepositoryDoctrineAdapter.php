@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace App\Instrastructure\Persistence\Doctrine;
+namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Entity\Club;
 use App\Domain\Repository\Common\RepositoryOperationsInterface;

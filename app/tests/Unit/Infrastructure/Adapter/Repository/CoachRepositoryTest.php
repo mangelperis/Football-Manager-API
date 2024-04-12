@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Infrastructure\Adapter\Repository;
 
 use App\Domain\Entity\Coach;
-use App\Instrastructure\Persistence\Doctrine\CoachRepositoryDoctrineAdapter;
+use App\Infrastructure\Persistence\Doctrine\CoachRepositoryDoctrineAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
