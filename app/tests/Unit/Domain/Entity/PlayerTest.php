@@ -14,13 +14,13 @@ class PlayerTest extends TestCase
         $player->setName('John Doe');
         $player->setSalary(100000);
         $player->setEmail('john@example.com');
-        $player->setRole('defender');
+        $player->setPosition('defender');
 
         $this->assertInstanceOf(Player::class, $player);
         $this->assertEquals('John Doe', $player->getName());
         $this->assertEquals(100000, $player->getSalary());
         $this->assertEquals('john@example.com', $player->getEmail());
-        $this->assertEquals('defender', $player->getRole());
+        $this->assertEquals('defender', $player->getPosition());
 
         return $player;
     }

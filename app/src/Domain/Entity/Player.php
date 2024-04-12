@@ -17,7 +17,7 @@ class Player extends Employee implements ClubMember
     #[Assert\NotBlank]
     #[Assert\Type(type: 'string')]
     #[ORM\Column(type: 'string', length: 20)]
-    private string $role;
+    private string $position;
 
     #[ORM\ManyToOne(targetEntity: Club::class, inversedBy: 'players')]
     #[ORM\JoinColumn(name: 'club_id', referencedColumnName: 'id')]
@@ -35,13 +35,13 @@ class Player extends Employee implements ClubMember
         return $this;
     }
 
-    public function getRole(): string
+    public function getPosition(): string
     {
-        return $this->role;
+        return $this->position;
     }
 
-    public function setRole(string $role): void
+    public function setPosition(string $position): void
     {
-        $this->role = $role;
+        $this->position = $position;
     }
 }
