@@ -33,7 +33,7 @@ class EmailNotifierTest extends TestCase
         $body = 'Body';
 
         $email = (new Email())
-            ->from('noreply@example.com')
+            ->from('noreply@footballmanager.com')
             ->to($recipientEmail)
             ->subject($subject)
             ->text($body);

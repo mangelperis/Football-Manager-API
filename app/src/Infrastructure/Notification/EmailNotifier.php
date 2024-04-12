@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Notification;
 
 use App\Domain\Repository\NotifierInterface;
+use Exception;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -16,7 +17,7 @@ class EmailNotifier implements NotifierInterface
     public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
-        $this->senderEmail = 'noreply@example.com';
+        $this->senderEmail = 'noreply@footballmanager.com';
     }
 
     /**
