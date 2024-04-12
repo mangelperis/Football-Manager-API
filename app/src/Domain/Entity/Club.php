@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use Coach;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use DateTime;
-use Player;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity]
 #[ORM\Table(name: 'clubs')]
 #[ORM\UniqueConstraint(name: 'name', columns: ['name'])]
-#[ORM\Index(columns: ['hotel_id'], name: 'hotel_id')]
-#[ORM\Index(columns: ['locator'], name: 'locator')]
-#[ORM\Index(columns: ['room'], name: 'room')]
+#[ORM\Index(columns: ['budget'], name: 'budget_index')]
 class Club
 {
     #[Assert\Type(type: 'integer')]
@@ -30,12 +27,12 @@ class Club
 
     #[Assert\NotBlank]
     #[Assert\Type(type: 'string')]
-    #[ORM\Column(type:'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
     #[Assert\NotBlank]
     #[Assert\Type(type: 'string')]
-    #[ORM\Column(type:'string', length: 3)]
+    #[ORM\Column(type: 'string', length: 3)]
     private string $shortname;
 
     #[Assert\Country]
