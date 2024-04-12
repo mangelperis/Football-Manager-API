@@ -54,10 +54,10 @@ services:
             - "8080:8080"
         networks:
             - fm
-    mailer:
+    mailcatcher:
         env_file:
             - .env
-        container_name: "mailer"
+        container_name: "mailcatcher"
         image: schickling/mailcatcher
         ports:
             - "1025:1025"
