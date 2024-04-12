@@ -131,8 +131,12 @@ class Club
 
     public function addPlayer(Player $player): void
     {
-        $player->setClub($this);
         $this->players->add($player);
+    }
+
+    public function removePlayer(Player $player): void
+    {
+        $this->players->removeElement($player);
     }
 
     /**
@@ -145,7 +149,22 @@ class Club
 
     public function addCoach(Coach $coach): void
     {
-        $coach->setClub($this);
         $this->coaches->add($coach);
     }
+
+    public function removeCoach(Coach $coach): void
+    {
+        $this->coaches->removeElement($coach);
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return sprintf("%s-%s-%s", $this->shortname, $this->name, $this->country);
+    }
+
+
+
 }

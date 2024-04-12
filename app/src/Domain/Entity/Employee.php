@@ -80,4 +80,9 @@ abstract class Employee
         return $this;
     }
 
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
 }

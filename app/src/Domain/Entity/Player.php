@@ -44,4 +44,19 @@ class Player extends Employee implements ClubMember
     {
         $this->position = $position;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+          'id' => $this->getId(),
+          'name' => $this->getName(),
+          'position' => $this->getPosition(),
+          'salary' => $this->getSalary(),
+          'email' => $this->getEmail(),
+          'created' => $this->getCreated()->format('Y-m-d H:i:s'),
+        ];
+    }
 }
