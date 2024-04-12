@@ -73,6 +73,17 @@ class ClubRepositoryTest extends TestCase
         $this->assertEquals($value, $result->getName());
     }
 
+    public function testUpdateInvalidAttribute(): void
+    {
+        $club = new Club();
+        $attribute = 'competition';
+        $value = 'LFP';
+
+        $result = $this->clubRepository->update($attribute, $value, $club);
+        $this->assertNotInstanceOf(Club::class, $result);
+        $this->assertInstanceOf(\InvalidArgumentException::class, $result);
+    }
+
     public function testUpdateBudget(): void
     {
         $club = new Club();
@@ -89,4 +100,6 @@ class ClubRepositoryTest extends TestCase
         $this->assertInstanceOf(Club::class, $result);
         $this->assertEquals($value, $result->getBudget());
     }
+
+
 }

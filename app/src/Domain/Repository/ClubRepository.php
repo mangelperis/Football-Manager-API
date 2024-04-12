@@ -87,7 +87,7 @@ class ClubRepository extends EntityRepository implements RepositoryOperationsInt
 
             return $entity;
         } catch (Exception $exception) {
-            return null;
+            return $exception;
         }
     }
 
