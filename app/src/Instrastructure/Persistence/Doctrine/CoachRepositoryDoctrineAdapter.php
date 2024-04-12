@@ -2,17 +2,16 @@
 declare(strict_types=1);
 
 
-namespace App\Domain\Repository;
+namespace App\Instrastructure\Persistence\Doctrine;
 
 use App\Domain\Entity\Coach;
-use App\Domain\Repository\Common\SaveInterface;
 use App\Domain\Repository\Common\DeleteInterface;
+use App\Domain\Repository\Common\SaveInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\Entity;
 use Exception;
 
-class CoachRepository extends EntityRepository implements SaveInterface, DeleteInterface
+class CoachRepositoryDoctrineAdapter extends EntityRepository implements SaveInterface, DeleteInterface
 {
     private EntityManagerInterface $entityManager;
 

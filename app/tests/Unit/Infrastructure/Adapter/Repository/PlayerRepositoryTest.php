@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Domain\Repository;
+namespace App\Tests\Unit\Infrastructure\Adapter\Repository;
 
-use App\Domain\Entity\Coach;
-use App\Domain\Repository\CoachRepository;
+use App\Domain\Entity\Player;
+use App\Instrastructure\Persistence\Doctrine\PlayerRepositoryDoctrineAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
 
-class CoachRepositoryTest extends TestCase
+class PlayerRepositoryTest extends TestCase
 {
     private EntityManagerInterface $entityManager;
-    private CoachRepository $coachRepository;
+    private PlayerRepositoryDoctrineAdapter $playerRepository;
 
     protected function setUp(): void
     {
@@ -22,36 +22,36 @@ class CoachRepositoryTest extends TestCase
         $classMetadata = $this->createMock(ClassMetadata::class);
         $this->entityManager->expects($this->once())
             ->method('getClassMetadata')
-            ->with(Coach::class)
+            ->with(Player::class)
             ->willReturn($classMetadata);
 
-        $this->coachRepository = new CoachRepository($this->entityManager);
+        $this->playerRepository = new PlayerRepositoryDoctrineAdapter($this->entityManager);
     }
 
     public function testSave(): void
     {
-        $coach = new Coach();
+        $player = new Player();
         $this->entityManager->expects($this->once())
             ->method('persist')
-            ->with($coach);
+            ->with($player);
         $this->entityManager->expects($this->once())
             ->method('flush');
 
-        $result = $this->coachRepository->save($coach);
+        $result = $this->playerRepository->save($player);
 
         $this->assertTrue($result);
     }
 
     public function testDelete(): void
     {
-        $coach = new Coach();
+        $player = new Player();
         $this->entityManager->expects($this->once())
             ->method('remove')
-            ->with($coach);
+            ->with($player);
         $this->entityManager->expects($this->once())
             ->method('flush');
 
-        $result = $this->coachRepository->delete($coach);
+        $result = $this->playerRepository->delete($player);
 
         $this->assertTrue($result);
     }

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Domain\Repository;
+namespace App\Tests\Unit\Infrastructure\Adapter\Repository;
 
 use App\Domain\Entity\Club;
-use App\Domain\Repository\ClubRepository;
+use App\Instrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class ClubRepositoryTest extends TestCase
 {
     private EntityManagerInterface $entityManager;
-    private ClubRepository $clubRepository;
+    private ClubRepositoryDoctrineAdapter $clubRepository;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class ClubRepositoryTest extends TestCase
             ->with(Club::class)
             ->willReturn($classMetadata);
 
-        $this->clubRepository = new ClubRepository($this->entityManager);
+        $this->clubRepository = new ClubRepositoryDoctrineAdapter($this->entityManager);
     }
 
     public function testSave(): void

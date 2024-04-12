@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace App\Domain\Repository;
+namespace App\Instrastructure\Persistence\Doctrine;
 
 use App\Domain\Entity\Club;
 use App\Domain\Repository\Common\RepositoryOperationsInterface;
@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 
-class ClubRepository extends EntityRepository implements RepositoryOperationsInterface
+class ClubRepositoryDoctrineAdapter extends EntityRepository implements RepositoryOperationsInterface
 {
     private EntityManagerInterface $entityManager;
 

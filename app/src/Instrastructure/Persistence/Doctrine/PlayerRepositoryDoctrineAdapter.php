@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace App\Domain\Repository;
+namespace App\Instrastructure\Persistence\Doctrine;
 
 use App\Domain\Entity\Player;
 use App\Domain\Repository\Common\DeleteInterface;
@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 
-class PlayerRepository extends EntityRepository implements SaveInterface, DeleteInterface
+class PlayerRepositoryDoctrineAdapter extends EntityRepository implements SaveInterface, DeleteInterface
 {
 
     private EntityManagerInterface $entityManager;
