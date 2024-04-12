@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Table(name: 'players')]
 #[ORM\UniqueConstraint(name: 'email', columns: ['email'])]
-#[ORM\Index(columns: ['budget'], name: 'budget_index')]
+#[ORM\Index(columns: ['name'], name: 'name_index')]
 class Player
 {
     #[Assert\Type(type: 'integer')]
