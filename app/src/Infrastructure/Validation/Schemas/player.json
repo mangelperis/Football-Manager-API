@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Player",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "position": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20
+    },
+    "salary": {
+      "type": "number",
+      "minimum": 1
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    }
+  },
+  "required": ["name", "position", "salary", "email"],
+  "additionalProperties": false
+}
