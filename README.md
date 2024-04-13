@@ -40,6 +40,7 @@ With this Docker-Symfony-Stack boilerplate, it's possible to set up a local deve
 * **symfony/serializer**: serialization system for converting between objects and arrays, to JSON, XML, YAML, and CSV.
 * **stof/doctrine-extensions-bundle**: doctrine extensions, features to ORM entities (Timestampable)
 * **symfony/mailer**: symfony mailer to send mails
+* **justinrainbow/json-schema**: allows you to define the structure and constraints of the JSON data that your API expects.
 
 ***
 
