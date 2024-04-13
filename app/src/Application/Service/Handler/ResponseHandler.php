@@ -29,29 +29,32 @@ class ResponseHandler
     public function createSuccessResponse($data, string $type, int $statusCode = Response::HTTP_CREATED, array $headers = []): JsonResponse
     {
         $response = new JsonResponse([
-            'data' => $data,
             'message' => sprintf("%s created successfully.", ucfirst($type)),
-
+            'data' => $data,
         ], $statusCode, $headers);
 
         $response->headers->set('Content-Type', 'application/json');
-        $response->headers->set('Location', '/api/pla');
+        $response->headers->set('Location', "/api/{$type}/{$data['id']}");
 
         return $response;
     }
 
 
     /**
-     * @param $message
+     * @param string $message
+     * @param array|null $errors
      * @param int $statusCode
      * @param array $headers
      * @return JsonResponse
      */
-    public function createErrorResponse($message, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR, array $headers = []): JsonResponse
+    public function createErrorResponse(string $message, array $errors = null, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR, array $headers = []): JsonResponse
     {
-        return new JsonResponse([
-            'success' => false,
-            'error' => $message,
+        $response = new JsonResponse([
+            'message' => $message,
+            'errors' => $errors,
         ], $statusCode, $headers);
+
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 }
