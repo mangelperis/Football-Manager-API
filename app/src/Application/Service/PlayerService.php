@@ -35,10 +35,16 @@ class PlayerService
     public function createPlayer(array $data): ?Player
     {
         try {
-            $player = new Player();
+            $player = $this->playerRepository->findOneBy(['email' => $data['email']]);
+
+            //Create one if not present in database
+            if(!$player){
+                $player = new Player();
+                $player->setEmail($data['email']);
+            }
+
+            //Update Name & Position if existed before
             $player->setName($data['name']);
-            $player->setSalary($data['salary']);
-            $player->setEmail($data['email']);
             $player->setPosition($data['position']);
 
             $result = $this->playerRepository->save($player);

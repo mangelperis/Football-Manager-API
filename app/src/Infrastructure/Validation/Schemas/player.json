@@ -10,18 +10,35 @@
     },
     "position": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 20
-    },
-    "salary": {
-      "type": "number",
-      "minimum": 1
+      "enum": [
+        "AM",
+        "SW",
+        "CB",
+        "CF",
+        "LB",
+        "RB",
+        "FB",
+        "LWB",
+        "RWB",
+        "D",
+        "DM",
+        "CM",
+        "F",
+        "GK",
+        "IF",
+        "OL",
+        "OR"
+      ]
     },
     "email": {
       "type": "string",
       "format": "email"
     }
   },
-  "required": ["name", "position", "salary", "email"],
+  "required": [
+    "name",
+    "position",
+    "email"
+  ],
   "additionalProperties": false
 }

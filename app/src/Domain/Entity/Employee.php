@@ -25,7 +25,7 @@ abstract class Employee
 
     #[Assert\Type(type: 'float')]
     #[ORM\Column(type: 'float')]
-    private float $salary;
+    private float $salary = 0;
 
     #[Assert\Type(type: 'string')]
     #[ORM\Column(type: 'string', length: 255)]

@@ -8,15 +8,18 @@ use JsonSchema\Validator;
 
 class JsonSchemaValidator
 {
+    const string SCHEMA_DIR = __DIR__.'/Schemas/';
     private Validator $validator;
     private string $jsonValidatorPath;
     private array $dataObject;
+    private array $errors;
 
-    public function __construct(string $schemaPath)
+    public function __construct(string $schemaFile)
     {
         $this->validator = new Validator();
-        $this->jsonValidatorPath = $schemaPath;
+        $this->jsonValidatorPath = self::SCHEMA_DIR.$schemaFile;
         $this->dataObject = [];
+        $this->errors = [];
     }
 
     /**
@@ -32,16 +35,16 @@ class JsonSchemaValidator
 
             $this->validator->coerce($decodedData, (object)['$ref' => 'file://' . realpath($this->jsonValidatorPath)]);
 
-
             if (!$this->validator->isValid()) {
 //                Manage or Log errors as needed... Example:
-//                foreach ($this->validator->getErrors() as $error) {
-//                   \printf("[%s] %s\n", $error['property'], $error['message']);
-//                }
+                foreach ($this->validator->getErrors() as $error) {
+                   //\printf("[%s] %s\n", $error['property'], $error['message']);
+                    $this->errors[$error['property']] = $error['message'];
+                }
                 return false;
             }
 
-            $this->dataObject = $decodedData;
+            $this->dataObject = (array) $decodedData;
 
             return true;
         } catch (\Exception $e) {
@@ -55,5 +58,13 @@ class JsonSchemaValidator
     public function getDataObject(): array
     {
         return $this->dataObject;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
     }
 }

@@ -19,7 +19,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayerController extends AbstractFOSRestController
 {
     const string TYPE = 'player';
-    const string PLAYER_JSON_SCHEMA = __DIR__ . '../../Infrastructure/Validation/Schemas/player.json';
+    //Place it under Infrastructure\Validation\Schemas.
+    const string PLAYER_JSON_SCHEMA = 'player.json';
 
     private PlayerService $playerService;
     private JsonSchemaValidator $jsonValidator;
@@ -45,13 +46,13 @@ class PlayerController extends AbstractFOSRestController
     public function createPlayer(Request $request): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
-
             //Validate input data against schema
-            if (!$this->jsonValidator->validate($data)) {
-                return $this->handler->createErrorResponse('Source JSON is not valid', Response::HTTP_UNPROCESSABLE_ENTITY);
+            if (!$this->jsonValidator->validate($request->getContent())) {
+                return $this->handler->createErrorResponse('Source JSON is not valid', $this->jsonValidator->getErrors(), Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
+            //IsValid
+            $data = $this->jsonValidator->getDataObject();
             /** @var Player $player */
             $player = $this->playerService->createPlayer($data);
 
@@ -60,7 +61,7 @@ class PlayerController extends AbstractFOSRestController
                 return $this->handler->createSuccessResponse($player->toArray(), self::TYPE);
             }
 
-            return $this->handler->createErrorResponse('Something went wrong', Response::HTTP_BAD_REQUEST);
+            return $this->handler->createErrorResponse('Something went wrong', [], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             $this->logger->error("[API] Create player error: {$e->getMessage()}");
             return $this->handler->createErrorResponse('Something went wrong');
