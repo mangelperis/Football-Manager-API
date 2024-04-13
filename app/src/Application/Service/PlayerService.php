@@ -11,6 +11,7 @@ use App\Infrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
 use App\Infrastructure\Persistence\Doctrine\PlayerRepositoryDoctrineAdapter;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
@@ -38,7 +39,7 @@ class PlayerService
             $player = $this->playerRepository->findOneBy(['email' => $data['email']]);
 
             //Create one if not present in database
-            if(!$player){
+            if (!$player) {
                 $player = new Player();
                 $player->setEmail($data['email']);
             }
@@ -73,11 +74,14 @@ class PlayerService
             /** @var Player $player */
             $player = $this->playerRepository->find($playerId);
 
+
             if (!$player) {
-                throw new \InvalidArgumentException('Player not found.');
+                throw new \InvalidArgumentException('Player not found.', Response::HTTP_NOT_FOUND);
             }
 
             $this->playerRepository->delete($player);
+        } catch (\InvalidArgumentException $exception) {
+            throw new Exception($exception->getMessage(), $exception->getCode());
         } catch (Exception $exception) {
             $this->logger->error(sprintf("[SERVICE] delete fail: %s", $exception->getMessage()));
             throw new Exception('Error while deleting player');
@@ -90,6 +94,7 @@ class PlayerService
      * @param int $clubId
      * @param float $salary
      * @return void
+     * @throws Exception
      */
     public function attachToClub(int $playerId, int $clubId, float $salary): void
     {
@@ -100,11 +105,11 @@ class PlayerService
             $club = $this->clubRepository->find($clubId);
 
             if (!$player || !$club) {
-                throw new \InvalidArgumentException('Player or club not found.');
+                throw new \InvalidArgumentException('Player or club not found.', Response::HTTP_NOT_FOUND);
             }
 
             if ($player->getClub()) {
-                throw new \LogicException('Player is already attached to a club.');
+                throw new \LogicException('Player is already attached to a club.', Response::HTTP_CONFLICT);
             }
 
             //Attach logic
@@ -123,7 +128,7 @@ class PlayerService
             //Validation of entities before any change
             if (!$this->validator->validate($player) || !$this->validator->validate($club)) {
                 $this->logger->notice(sprintf("[SERVICE] Invalid Player [%s]-[%s]", $player->getName(), $player->getClub()->toString()));
-                throw new \LogicException('Invalid Player data.');
+                throw new \LogicException('Invalid Player data.', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $this->playerRepository->save($player);
@@ -137,8 +142,11 @@ class PlayerService
 
             $this->logger->log(0, sprintf("[NOTIFY] Mail Sent to [%s]", $player->getEmail()));
 
+        } catch (\InvalidArgumentException|\LogicException  $exception) {
+            throw new Exception($exception->getMessage(), $exception->getCode());
         } catch (Exception $exception) {
             $this->logger->error(sprintf("[SERVICE] Player attach fail: %s", $exception->getMessage()));
+            throw new Exception('Error while attaching player to a Club');
         }
     }
 
@@ -146,6 +154,7 @@ class PlayerService
     /**
      * @param int $playerId
      * @return void
+     * @throws Exception
      */
     public function removeFromClub(int $playerId): void
     {
@@ -154,14 +163,14 @@ class PlayerService
             $player = $this->playerRepository->find($playerId);
 
             if (!$player) {
-                throw new \InvalidArgumentException('Player not found.');
+                throw new \InvalidArgumentException('Player not found.', Response::HTTP_NOT_FOUND);
             }
 
             /** @var Club $club */
             $club = $player->getClub();
 
             if (!$club) {
-                throw new \LogicException('Player is not attached to any club.');
+                throw new \LogicException('Player is not attached to any club.', Response::HTTP_CONFLICT);
             }
 
             $club->removePlayer($player);
@@ -181,8 +190,12 @@ class PlayerService
             );
             $this->logger->log(0, sprintf("[NOTIFY] Mail Sent to [%s]", $player->getEmail()));
 
+        } catch (\InvalidArgumentException|\LogicException  $exception) {
+            throw new Exception($exception->getMessage(), $exception->getCode());
+
         } catch (Exception $exception) {
             $this->logger->error(sprintf("[SERVICE] Player attach fail: %s", $exception->getMessage()));
+            throw new Exception('Error while removing player from Club');
 
         }
     }

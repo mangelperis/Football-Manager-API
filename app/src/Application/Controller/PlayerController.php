@@ -8,6 +8,7 @@ use App\Application\Service\Handler\ResponseHandler;
 use App\Application\Service\PlayerService;
 use App\Domain\Entity\Player;
 use App\Infrastructure\Validation\JsonSchemaValidator;
+use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use JsonSchema\Validator;
 use Psr\Log\LoggerInterface;
@@ -40,7 +41,7 @@ class PlayerController extends AbstractFOSRestController
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     #[Route('/player', name: 'create_player', methods: ['POST'])]
     public function createPlayer(Request $request): JsonResponse
@@ -48,7 +49,7 @@ class PlayerController extends AbstractFOSRestController
         try {
             //Validate input data against schema
             if (!$this->jsonValidator->validate($request->getContent())) {
-                return $this->handler->createErrorResponse('Source JSON is not valid', $this->jsonValidator->getErrors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+                return $this->handler->returnErrorResponse('Source JSON is not valid', Response::HTTP_UNPROCESSABLE_ENTITY, $this->jsonValidator->getErrors());
             }
 
             //IsValid
@@ -61,10 +62,22 @@ class PlayerController extends AbstractFOSRestController
                 return $this->handler->createSuccessResponse($player->toArray(), self::TYPE);
             }
 
-            return $this->handler->createErrorResponse('Something went wrong', [], Response::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
+            return $this->handler->returnErrorResponse('Something went wrong', Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
             $this->logger->error("[API] Create player error: {$e->getMessage()}");
-            return $this->handler->createErrorResponse('Something went wrong');
+            return $this->handler->returnErrorResponse('Something went wrong');
+        }
+    }
+
+    #[Route('/player/{id}', name: 'delete_player', methods: ['DELETE'])]
+    public function deletePlayer(int $id): JsonResponse
+    {
+        try {
+            $this->playerService->deletePlayer($id);
+
+            return $this->handler->createResponse('', Response::HTTP_NO_CONTENT);
+        } catch (Exception $e) {
+            return $this->handler->returnErrorResponse($e->getMessage(), $e->getCode());
         }
     }
 

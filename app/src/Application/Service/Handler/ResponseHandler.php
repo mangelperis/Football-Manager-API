@@ -19,7 +19,7 @@ class ResponseHandler
         return new JsonResponse($data, $statusCode, [], true);
     }
 
-    /**
+    /** ONLY FOR POST / CREATE ELEMENTS
      * @param $data
      * @param string $type
      * @param int $statusCode
@@ -47,7 +47,7 @@ class ResponseHandler
      * @param array $headers
      * @return JsonResponse
      */
-    public function createErrorResponse(string $message, array $errors = null, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR, array $headers = []): JsonResponse
+    public function returnErrorResponse(string $message, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR, array $errors = null, array $headers = []): JsonResponse
     {
         $response = new JsonResponse([
             'message' => $message,
