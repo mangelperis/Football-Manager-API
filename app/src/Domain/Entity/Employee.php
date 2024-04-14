@@ -86,4 +86,10 @@ abstract class Employee
         return $this->created;
     }
 
+    //Testing purposes only...
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
 }
