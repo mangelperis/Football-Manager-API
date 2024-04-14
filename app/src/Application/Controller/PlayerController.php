@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PlayerController extends AbstractFOSRestController
 {
@@ -88,6 +90,79 @@ class PlayerController extends AbstractFOSRestController
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+    /**
+     * @param Request $request
+     * @param int $clubId
+     * @param ValidatorInterface $validator
+     * @return JsonResponse
+     */
+    #[Route('/club/{clubId}/player', name: 'attach_player_to_club', methods: ['POST'])]
+    public function attachPlayerToClub(Request $request, int $clubId, ValidatorInterface $validator): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+
+            if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+                throw new \InvalidArgumentException(sprintf('Error decoding JSON: %s', json_last_error_msg()), Response::HTTP_BAD_REQUEST);
+            }
+
+            //Check that source data is valid
+            $constraints = new Assert\Collection([
+                'playerId' => [
+                    new Assert\NotBlank(),
+                    new Assert\Type('integer'),
+                ],
+                'salary' => [
+                    new Assert\NotBlank(),
+                    new Assert\Type('float'),
+                    new Assert\GreaterThanOrEqual(0),
+                ],
+            ]);
+
+            $validate = $validator->validate($data, $constraints);
+
+            //Return validation errors
+            if(null !== $this->responseHandler->returnValidationErrorsResponse($validate)){
+                return $this->responseHandler->returnValidationErrorsResponse($validate);
+            }
+
+            $playerId = $data['playerId'];
+            $salary = $data['salary'];
+
+            $this->playerService->attachToClub($playerId, $clubId, $salary);
+
+            return $this->responseHandler->createResponse('Player attached to club successfully');
+        } catch (\InvalidArgumentException|\LogicException $e) {
+            return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error("[API] Attach player to club error: {$e->getMessage()}");
+            return $this->responseHandler->returnErrorResponse('Something went wrong');
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param int $playerId
+     * @return JsonResponse
+     */
+    #[Route('/player/{playerId}/club', name: 'remove_player_from_club', methods: ['DELETE'])]
+    public function removePlayerFromClub(Request $request, int $playerId): JsonResponse
+    {
+        try {
+            $this->playerService->removeFromClub($playerId);
+
+            return $this->responseHandler->createResponse('Player removed from club successfully');
+        } catch (\InvalidArgumentException|\LogicException $e) {
+            return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error("[API] Remove player from club error: {$e->getMessage()}");
+            return $this->responseHandler->returnErrorResponse('Something went wrong');
+        }
+    }
+
+
+
 
 
 }
