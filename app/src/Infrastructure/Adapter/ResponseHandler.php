@@ -77,10 +77,11 @@ class ResponseHandler implements ResponseHandlerInterface
      * @param array $DTO
      * @return JsonResponse
      */
-    public function createDtoResponse(array $DTO): JsonResponse
+    public function createDtoResponse(mixed $DTO): JsonResponse
     {
         //DTO must have toArray method defined
         //This changes the DTO element order, sadly
+        /** @var array $data */
         $data = $this->serializer->normalize($DTO);
 
         $response = new JsonResponse($data, Response::HTTP_OK);

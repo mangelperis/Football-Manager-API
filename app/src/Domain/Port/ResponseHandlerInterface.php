@@ -43,7 +43,7 @@ interface ResponseHandlerInterface
      * @param array $DTO
      * @return JsonResponse
      */
-    public function createDtoResponse(array $DTO): JsonResponse;
+    public function createDtoResponse(mixed $DTO): JsonResponse;
 
     /**
      * Creates a JSON response for validation errors.
