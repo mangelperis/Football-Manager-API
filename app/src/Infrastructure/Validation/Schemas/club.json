@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Club",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "shortname": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3
+    },
+    "country": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2
+    },
+    "budget": {
+      "type": "number",
+      "minimum": 1
+    }
+  },
+  "required": ["name", "shortname", "country", "budget"],
+  "additionalProperties": false
+}
