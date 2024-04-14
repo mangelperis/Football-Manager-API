@@ -7,6 +7,8 @@ namespace App\Tests\Unit\Domain\Entity;
 use App\Domain\Entity\Club;
 use App\Domain\Entity\Player;
 use App\Domain\Entity\Coach;
+use App\Infrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
+use phpDocumentor\Reflection\Types\Integer;
 use PHPUnit\Framework\TestCase;
 
 class ClubTest extends TestCase
@@ -16,14 +18,14 @@ class ClubTest extends TestCase
         $club = new Club();
         $club->setName('Test Club');
         $club->setShortname('TCB');
-        $club->setCountry('US');
+        $club->setCountry('ES');
         $club->setBudget(1000000.0);
         $club->setEmail('club@mail.com');
 
         $this->assertInstanceOf(Club::class, $club);
         $this->assertEquals('Test Club', $club->getName());
         $this->assertEquals('TCB', $club->getShortname());
-        $this->assertEquals('US', $club->getCountry());
+        $this->assertEquals('ES', $club->getCountry());
         $this->assertEquals(1000000.0, $club->getBudget());
         $this->assertEquals('club@mail.com', $club->getEmail());
     }
