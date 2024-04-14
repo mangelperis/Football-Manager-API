@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Entity;
 
 use App\Domain\Entity\Club;
-use App\Domain\Entity\Player;
 use App\Domain\Entity\Coach;
-use App\Infrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
-use phpDocumentor\Reflection\Types\Integer;
+use App\Domain\Entity\Player;
 use PHPUnit\Framework\TestCase;
 
 class ClubTest extends TestCase

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace App\Infrastructure\Persistence\Doctrine;
+namespace App\Infrastructure\Adapter\DoctrineRepository;
 
 use App\Domain\Entity\Coach;
 use App\Domain\Repository\Common\DeleteInterface;

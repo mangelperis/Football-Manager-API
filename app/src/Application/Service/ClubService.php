@@ -7,7 +7,7 @@ namespace App\Application\Service;
 use App\Application\DTO\ClubDetailsDTO;
 use App\Application\DTO\ClubDTO;
 use App\Domain\Entity\Club;
-use App\Infrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
+use App\Infrastructure\Adapter\DoctrineRepository\ClubRepositoryDoctrineAdapter;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;

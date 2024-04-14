@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Infrastructure\Adapter\Repository;
+namespace App\Tests\Unit\Infrastructure\Adapter\DoctrineRepository;
 
 use App\Domain\Entity\Club;
-use App\Infrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
+use App\Infrastructure\Adapter\DoctrineRepository\ClubRepositoryDoctrineAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
