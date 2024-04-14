@@ -21,8 +21,18 @@
     "budget": {
       "type": "number",
       "minimum": 1
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
     }
   },
-  "required": ["name", "shortname", "country", "budget"],
+  "required": [
+    "name",
+    "shortname",
+    "country",
+    "budget",
+    "email"
+  ],
   "additionalProperties": false
 }

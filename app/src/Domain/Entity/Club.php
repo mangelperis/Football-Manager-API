@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Table(name: 'clubs')]
 #[ORM\UniqueConstraint(name: 'name', columns: ['name'])]
+#[ORM\UniqueConstraint(name: 'email', columns: ['email'])]
 #[ORM\Index(columns: ['budget'], name: 'budget_index')]
 class Club
 {
@@ -42,6 +43,12 @@ class Club
     #[Assert\Type(type: 'float')]
     #[ORM\Column(type: 'float')]
     private float $budget;
+
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    #[Assert\Type(type: 'string')]
+    #[ORM\Column(type: 'string', length: 100)]
+    private string $email;
 
     /**
      * @var ArrayCollection<Player>
@@ -176,6 +183,7 @@ class Club
             'shortname' => $this->getShortname(),
             'country' => $this->getCountry(),
             'budget' => $this->getBudget(),
+            'email' => $this->getEmail(),
             'created' => $this->getCreated()->format('Y-m-d H:i:s'),
         ];
     }
@@ -183,6 +191,16 @@ class Club
     public function getCreated(): DateTime
     {
         return $this->created;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
     }
 
 }

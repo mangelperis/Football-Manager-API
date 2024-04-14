@@ -28,6 +28,7 @@ abstract class Employee
     private float $salary = 0;
 
     #[Assert\Type(type: 'string')]
+    #[Assert\Email()]
     #[ORM\Column(type: 'string', length: 255)]
     private string $email;
 

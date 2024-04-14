@@ -46,6 +46,7 @@ class ClubService
             $club->setShortname(strtoupper($data['shortname']));
             $club->setCountry(strtoupper($data['country']));
             $club->setBudget($data['budget']);
+            $club->setEmail($data['email']);
 
             $result = $this->clubRepository->save($club);
 
