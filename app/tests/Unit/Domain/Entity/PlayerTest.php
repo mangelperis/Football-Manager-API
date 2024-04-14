@@ -1,5 +1,7 @@
 <?php
+declare(strict_types=1);
 
+namespace App\Tests\Unit\Domain\Entity;
 
 use App\Domain\Entity\Club;
 use App\Domain\Entity\Player;
@@ -33,5 +35,8 @@ class PlayerTest extends TestCase
         $player->setClub($club);
         $this->assertInstanceOf(Club::class, $player->getClub());
         $this->assertEquals($club, $player->getClub());
+
+        $player->setClub(null);
+        $this->assertNull($player->getClub());
     }
 }
