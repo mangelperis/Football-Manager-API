@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Application\Controller;
 
 use App\Application\Service\ClubService;
-use App\Application\Service\Handler\ResponseHandler;
 use App\Domain\Entity\Club;
+use App\Domain\Port\ResponseHandlerInterface;
 use App\Infrastructure\Validation\JsonSchemaValidator;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -25,13 +25,13 @@ class ClubController extends AbstractFOSRestController
     const string TYPE = 'club';
     private ClubService $clubService;
     private JsonSchemaValidator $jsonValidator;
-    private ResponseHandler $responseHandler;
+    private ResponseHandlerInterface $responseHandler;
     private LoggerInterface $logger;
 
 
     public function __construct(
         ClubService     $clubService,
-        ResponseHandler $responseHandler,
+        ResponseHandlerInterface $responseHandler,
         LoggerInterface $logger
     )
     {

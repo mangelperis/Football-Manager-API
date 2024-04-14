@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Application\Controller;
 
 
-use App\Application\Service\Handler\ResponseHandler;
 use App\Application\Service\PlayerService;
 use App\Domain\Entity\Player;
+use App\Infrastructure\Adapter\ResponseHandler;
 use App\Infrastructure\Validation\JsonSchemaValidator;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;

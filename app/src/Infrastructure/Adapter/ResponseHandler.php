@@ -2,14 +2,15 @@
 declare(strict_types=1);
 
 
-namespace App\Application\Service\Handler;
+namespace App\Infrastructure\Adapter;
 
+use App\Domain\Port\ResponseHandlerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ResponseHandler
+class ResponseHandler implements ResponseHandlerInterface
 {
     public function __construct(
         private SerializerInterface $serializer,
@@ -34,13 +35,13 @@ class ResponseHandler
     }
 
     /** ONLY FOR POST / CREATE ELEMENTS includes Location Header
-     * @param $data
+     * @param array $data
      * @param string $type
      * @param int $statusCode
      * @param array $headers
      * @return JsonResponse
      */
-    public function createSuccessResponse($data, string $type, int $statusCode = Response::HTTP_CREATED, array $headers = []): JsonResponse
+    public function createSuccessResponse(array $data, string $type, int $statusCode = Response::HTTP_CREATED, array $headers = []): JsonResponse
     {
         $response = new JsonResponse([
             'message' => sprintf("%s created successfully.", ucfirst($type)),

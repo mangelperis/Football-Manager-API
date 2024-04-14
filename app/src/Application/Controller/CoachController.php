@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace App\Application\Controller;
 
 use App\Application\Service\CoachService;
-use App\Application\Service\Handler\ResponseHandler;
 use App\Domain\Entity\Coach;
+use App\Domain\Port\ResponseHandlerInterface;
+use App\Infrastructure\Adapter\ResponseHandler;
 use App\Infrastructure\Validation\JsonSchemaValidator;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -28,12 +29,12 @@ class CoachController extends AbstractFOSRestController
 
     private CoachService $coachService;
     private JsonSchemaValidator $jsonValidator;
-    private ResponseHandler $responseHandler;
+    private ResponseHandlerInterface $responseHandler;
     private LoggerInterface $logger;
 
     public function __construct(
         CoachService    $coachService,
-        ResponseHandler $responseHandler,
+        ResponseHandlerInterface $responseHandler,
         LoggerInterface $logger
     )
     {
