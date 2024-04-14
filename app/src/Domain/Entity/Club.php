@@ -165,6 +165,24 @@ class Club
         return sprintf("%s-%s-%s", $this->shortname, $this->name, $this->country);
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'shortname' => $this->getShortname(),
+            'country' => $this->getCountry(),
+            'budget' => $this->getBudget(),
+            'created' => $this->getCreated()->format('Y-m-d H:i:s'),
+        ];
+    }
 
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
 
 }
