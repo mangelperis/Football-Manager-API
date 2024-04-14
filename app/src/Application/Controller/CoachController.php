@@ -22,7 +22,7 @@ class CoachController extends AbstractFOSRestController
 {
     const string TYPE = 'coach';
     //Place it under Infrastructure\Validation\Schemas.
-    const string PLAYER_JSON_SCHEMA = 'coach.json';
+    const string COACH_JSON_SCHEMA = 'coach.json';
     const int DEFAULT_PER_PAGE = 10;
 
 
@@ -38,7 +38,7 @@ class CoachController extends AbstractFOSRestController
     )
     {
         $this->coachService = $coachService;
-        $this->jsonValidator = new JsonSchemaValidator(self::PLAYER_JSON_SCHEMA);
+        $this->jsonValidator = new JsonSchemaValidator(self::COACH_JSON_SCHEMA);
         $this->responseHandler = $responseHandler;
         $this->logger = $logger;
     }
