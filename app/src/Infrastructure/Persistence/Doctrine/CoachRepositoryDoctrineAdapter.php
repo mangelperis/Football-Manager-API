@@ -52,4 +52,29 @@ class CoachRepositoryDoctrineAdapter extends EntityRepository implements SaveInt
             return false;
         }
     }
+
+
+    /**
+     * @param int $clubId
+     * @param int $page
+     * @param int $limit
+     * @param string $filter
+     * @return array
+     */
+    public function findByClub(int $clubId, int $page, int $limit, string $filter): array
+    {
+        $queryBuilder = $this->createQueryBuilder('coach')
+            ->where('coach.club = :clubId')
+            ->setParameter('clubId', $clubId)
+            ->orderBy('coach.role', 'ASC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        if (!empty($filter)) {
+            $queryBuilder->andWhere('coach.name LIKE :filter')
+                ->setParameter('filter', '%' . $filter . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

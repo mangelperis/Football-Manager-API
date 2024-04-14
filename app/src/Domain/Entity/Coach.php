@@ -44,4 +44,19 @@ class Coach extends Employee implements ClubMember
     {
         $this->role = $role;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'role' => $this->getRole(),
+            'salary' => $this->getSalary(),
+            'email' => $this->getEmail(),
+            'created' => $this->getCreated()->format('Y-m-d H:i:s'),
+        ];
+    }
 }

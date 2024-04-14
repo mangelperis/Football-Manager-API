@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace App\Application\Controller;
 
-
+use App\Application\Service\CoachService;
 use App\Application\Service\Handler\ResponseHandler;
-use App\Application\Service\PlayerService;
-use App\Domain\Entity\Player;
+use App\Domain\Entity\Coach;
 use App\Infrastructure\Validation\JsonSchemaValidator;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -15,28 +14,30 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
-class PlayerController extends AbstractFOSRestController
+
+class CoachController extends AbstractFOSRestController
 {
-    const string TYPE = 'player';
+    const string TYPE = 'coach';
     //Place it under Infrastructure\Validation\Schemas.
-    const string PLAYER_JSON_SCHEMA = 'player.json';
+    const string PLAYER_JSON_SCHEMA = 'coach.json';
     const int DEFAULT_PER_PAGE = 10;
 
-    private PlayerService $playerService;
+
+    private CoachService $coachService;
     private JsonSchemaValidator $jsonValidator;
     private ResponseHandler $responseHandler;
     private LoggerInterface $logger;
 
     public function __construct(
-        PlayerService   $playerService,
+        CoachService    $coachService,
         ResponseHandler $responseHandler,
         LoggerInterface $logger
     )
     {
-        $this->playerService = $playerService;
+        $this->coachService = $coachService;
         $this->jsonValidator = new JsonSchemaValidator(self::PLAYER_JSON_SCHEMA);
         $this->responseHandler = $responseHandler;
         $this->logger = $logger;
@@ -46,9 +47,10 @@ class PlayerController extends AbstractFOSRestController
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws \Exception
      */
-    #[Route('/player', name: 'create_player', methods: ['POST'])]
-    public function createPlayer(Request $request): JsonResponse
+    #[Route('/coach', name: 'create_coach', methods: ['POST'])]
+    public function createCoach(Request $request): JsonResponse
     {
         try {
             //Validate input data against schema
@@ -58,19 +60,19 @@ class PlayerController extends AbstractFOSRestController
 
             //IsValid
             $data = $this->jsonValidator->getDataObject();
-            /** @var Player $player */
-            $player = $this->playerService->createPlayer($data);
+            /** @var Coach $coach */
+            $coach = $this->coachService->createCoach($data);
 
-            if ($player) {
-                $this->logger->log(0, 'Created player', ['player' => $player]);
-                return $this->responseHandler->createSuccessResponse($player->toArray(), self::TYPE);
+            if ($coach) {
+                $this->logger->log(0, 'Created coach', ['coach' => $coach]);
+                return $this->responseHandler->createSuccessResponse($coach->toArray(), self::TYPE);
             }
 
             return $this->responseHandler->returnErrorResponse('Something went wrong', Response::HTTP_BAD_REQUEST);
         } catch (\InvalidArgumentException|\LogicException $e) {
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
-            $this->logger->error("[API] Create player error: {$e->getMessage()}");
+            $this->logger->error("[API] Create coach error: {$e->getMessage()}");
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
 
@@ -80,11 +82,11 @@ class PlayerController extends AbstractFOSRestController
      * @param int $id
      * @return JsonResponse
      */
-    #[Route('/player/{id}', name: 'delete_player', methods: ['DELETE'])]
-    public function deletePlayer(int $id): JsonResponse
+    #[Route('/coach/{id}', name: 'delete_coach', methods: ['DELETE'])]
+    public function deleteCoach(int $id): JsonResponse
     {
         try {
-            $this->playerService->deletePlayer($id);
+            $this->coachService->deleteCoach($id);
 
             return $this->responseHandler->createResponse('', Response::HTTP_NO_CONTENT);
         } catch (Exception $e) {
@@ -98,8 +100,8 @@ class PlayerController extends AbstractFOSRestController
      * @param ValidatorInterface $validator
      * @return JsonResponse
      */
-    #[Route('/club/{clubId}/player', name: 'attach_player_to_club', methods: ['POST'])]
-    public function attachPlayerToClub(Request $request, int $clubId, ValidatorInterface $validator): JsonResponse
+    #[Route('/club/{clubId}/coach', name: 'attach_coach_to_club', methods: ['POST'])]
+    public function attachCoachToClub(Request $request, int $clubId, ValidatorInterface $validator): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
@@ -110,7 +112,7 @@ class PlayerController extends AbstractFOSRestController
 
             //Check that source data is valid
             $constraints = new Assert\Collection([
-                'playerId' => [
+                'coachId' => [
                     new Assert\NotBlank(),
                     new Assert\Type('integer'),
                 ],
@@ -124,40 +126,40 @@ class PlayerController extends AbstractFOSRestController
             $validate = $validator->validate($data, $constraints);
 
             //Return validation errors
-            if(null !== $this->responseHandler->returnValidationErrorsResponse($validate)){
+            if (null !== $this->responseHandler->returnValidationErrorsResponse($validate)) {
                 return $this->responseHandler->returnValidationErrorsResponse($validate);
             }
 
-            $playerId = $data['playerId'];
+            $coachId = $data['coachId'];
             $salary = $data['salary'];
 
-            $this->playerService->attachToClub($playerId, $clubId, $salary);
+            $this->coachService->attachToClub($coachId, $clubId, $salary);
 
-            return $this->responseHandler->createResponse('Player attached to club successfully');
+            return $this->responseHandler->createResponse('Coach attached to club successfully');
         } catch (\InvalidArgumentException|\LogicException $e) {
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
-            $this->logger->error("[API] Attach player to club error: {$e->getMessage()}");
+            $this->logger->error("[API] Attach coach to club error: {$e->getMessage()}");
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
     }
 
     /**
      * @param Request $request
-     * @param int $playerId
+     * @param int $coachId
      * @return JsonResponse
      */
-    #[Route('/player/{playerId}/club', name: 'remove_player_from_club', methods: ['DELETE'])]
-    public function removePlayerFromClub(Request $request, int $playerId): JsonResponse
+    #[Route('/coach/{coachId}/club', name: 'remove_coach_from_club', methods: ['DELETE'])]
+    public function removeCoachFromClub(Request $request, int $coachId): JsonResponse
     {
         try {
-            $this->playerService->removeFromClub($playerId);
+            $this->coachService->removeFromClub($coachId);
 
-            return $this->responseHandler->createResponse('Player removed from club successfully');
+            return $this->responseHandler->createResponse('Coach removed from club successfully');
         } catch (\InvalidArgumentException|\LogicException $e) {
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
-            $this->logger->error("[API] Remove player from club error: {$e->getMessage()}");
+            $this->logger->error("[API] Remove coach from club error: {$e->getMessage()}");
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
     }
@@ -169,25 +171,24 @@ class PlayerController extends AbstractFOSRestController
      * @return JsonResponse
      * @throws Exception
      */
-    #[Route('/club/{clubId}/players', name: 'list_club_players', methods: ['GET'])]
-    public function listClubPlayers(Request $request, int $clubId): JsonResponse
+    #[Route('/club/{clubId}/coaches', name: 'list_club_coaches', methods: ['GET'])]
+    public function listClubCoaches(Request $request, int $clubId): JsonResponse
     {
         try {
             $page = $request->query->getInt('page', 1);
             $limit = $request->query->getInt('limit', self::DEFAULT_PER_PAGE);
             $filterName = $request->query->get('name', '');
 
-            $playerListDTOs = $this->playerService->getPlayersByClub($clubId, $page, $limit, $filterName);
+            $coachListDTOs = $this->coachService->getCoachesByClub($clubId, $page, $limit, $filterName);
 
-            return $this->responseHandler->createDtoResponse($playerListDTOs);
+            return $this->responseHandler->createDtoResponse($coachListDTOs);
 
         } catch (\InvalidArgumentException|\LogicException $e) {
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
-            $this->logger->error("[API] Fetch Club Players error: {$e->getMessage()}");
+            $this->logger->error("[API] Fetch Club Coaches error: {$e->getMessage()}");
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
     }
-
 
 }

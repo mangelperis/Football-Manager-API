@@ -135,6 +135,7 @@ class PlayerService
 
             $this->notifier->notify(
                 $player->getEmail(),
+                $club->getEmail(),
                 "Transfer to [{$club->getName()}] completed",
                 "You have signed for {$club->toString()} with a salary of {$player->getSalary()} tokens."
             );
@@ -184,7 +185,8 @@ class PlayerService
 
             $this->notifier->notify(
                 $player->getEmail(),
-                'Player removed from club',
+                $club->getEmail(),
+                "Player removed from [{$club->getName()}]",
                 'You have been removed from your club and now you\'re a free agent.'
             );
             $this->logger->log(0, sprintf("[NOTIFY] Mail Sent to [%s]", $player->getEmail()));
@@ -202,11 +204,11 @@ class PlayerService
      * @param int $clubId
      * @param int $page
      * @param int $limit
-     * @param string $name
+     * @param string $filterName
      * @return array
      * @throws Exception
      */
-    public function getPlayersByClub(int $clubId, int $page, int $limit, string $name): array
+    public function getPlayersByClub(int $clubId, int $page = 1, int $limit = 10, string $filterName = ''): array
     {
         try {
             $club = $this->clubRepository->find($clubId);
@@ -215,7 +217,7 @@ class PlayerService
                 throw new \InvalidArgumentException('Club not found.', Response::HTTP_NOT_FOUND);
             }
 
-            $players = $this->playerRepository->findByClub($clubId, $page, $limit, $name);
+            $players = $this->playerRepository->findByClub($clubId, $page, $limit, $filterName);
 
             if(!$players){
                 return [];
