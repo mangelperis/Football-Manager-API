@@ -48,7 +48,7 @@ class PlayerService
             $player->setName($data['name']);
             $player->setPosition($data['position']);
 
-            if(!$this->validator->validate($player)){
+            if (!$this->validator->validate($player)) {
                 throw new \LogicException('Player is not valid.', Response::HTTP_BAD_REQUEST);
             }
 
@@ -85,7 +85,7 @@ class PlayerService
 
             $this->playerRepository->delete($player);
         } catch (\InvalidArgumentException $exception) {
-            throw new Exception($exception->getMessage(), $exception->getCode());
+            throw new \InvalidArgumentException($exception->getMessage(), $exception->getCode());
         } catch (Exception $exception) {
             $this->logger->error(sprintf("[SERVICE] delete fail: %s", $exception->getMessage()));
             throw new Exception('Error while deleting player');
@@ -124,7 +124,7 @@ class PlayerService
             $newBalance = $club->getBudget() - $salary;
 
             if ($newBalance < 0) {
-                throw new \LogicException("Club balance is not enough to sign: {$player->getName()}.");
+                throw new \LogicException("Club balance is not enough to sign: {$player->getName()}.", Response::HTTP_CONFLICT);
             }
 
             $club->setBudget($newBalance);
@@ -189,12 +189,11 @@ class PlayerService
             $this->logger->log(0, sprintf("[NOTIFY] Mail Sent to [%s]", $player->getEmail()));
 
         } catch (\InvalidArgumentException|\LogicException  $exception) {
-            throw new Exception($exception->getMessage(), $exception->getCode());
+            throw new \InvalidArgumentException($exception->getMessage(), $exception->getCode());
 
         } catch (Exception $exception) {
             $this->logger->error(sprintf("[SERVICE] Player attach fail: %s", $exception->getMessage()));
             throw new Exception('Error while removing player from Club');
-
         }
     }
 

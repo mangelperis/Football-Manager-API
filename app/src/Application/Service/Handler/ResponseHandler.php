@@ -6,6 +6,7 @@ namespace App\Application\Service\Handler;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ResponseHandler
 {
@@ -22,7 +23,7 @@ class ResponseHandler
 
         $response->headers->set('Content-Type', 'application/json');
 
-        return  $response;
+        return $response;
     }
 
     /** ONLY FOR POST / CREATE ELEMENTS
@@ -62,5 +63,24 @@ class ResponseHandler
 
         $response->headers->set('Content-Type', 'application/json');
         return $response;
+    }
+
+    /**
+     * @param ConstraintViolationListInterface $validate
+     * @return JsonResponse|null
+     */
+    public function returnValidationErrorsResponse(ConstraintViolationListInterface $validate): ?JsonResponse
+    {
+        //Return errors
+        if (count($validate) > 0) {
+            $errors = [];
+
+            foreach ($validate as $error) {
+                $errors[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $this->returnErrorResponse('Invalid source data', Response::HTTP_BAD_REQUEST, $errors);
+        }
+
+        return null;
     }
 }

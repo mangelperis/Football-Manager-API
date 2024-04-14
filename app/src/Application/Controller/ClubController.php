@@ -108,14 +108,9 @@ class ClubController extends AbstractFOSRestController
 
             $validate = $validator->validate($data, $constraints);
 
-            //Return errors
-            if (count($validate) > 0) {
-                $errors = [];
-
-                foreach ($validate as $error) {
-                    $errors[$error->getPropertyPath()] = $error->getMessage();
-                }
-                return $this->responseHandler->returnErrorResponse('Invalid source data', Response::HTTP_BAD_REQUEST, $errors);
+            //Return validation errors
+            if(null !== $this->responseHandler->returnValidationErrorsResponse($validate)){
+                return $this->responseHandler->returnValidationErrorsResponse($validate);
             }
 
 
@@ -149,6 +144,42 @@ class ClubController extends AbstractFOSRestController
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
             $this->logger->error("[API] Remove player from club error: {$e->getMessage()}");
+            return $this->responseHandler->returnErrorResponse('Something went wrong');
+        }
+    }
+
+    #[Route('/club/{clubId}/budget', name: 'update_club_budget', methods: ['PUT'])]
+    public function updateClubBudget(Request $request, int $clubId, ValidatorInterface $validator): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+
+            //Check that source data is valid
+            $constraints = new Assert\Collection([
+                'budget' => [
+                    new Assert\NotBlank(),
+                    new Assert\Type('float'),
+                    new Assert\GreaterThanOrEqual(0),
+                ],
+            ]);
+
+            $validate = $validator->validate($data, $constraints);
+
+            //Return validation errors
+            if(null !== $this->responseHandler->returnValidationErrorsResponse($validate)){
+                return $this->responseHandler->returnValidationErrorsResponse($validate);
+            }
+
+            $newBudget = (float)$data['budget'];
+
+            $this->clubService->updateClubBudget($clubId, $newBudget);
+
+            return $this->responseHandler->createResponse('Club budget updated successfully');
+
+        } catch (\InvalidArgumentException|\LogicException $e) {
+            return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error("[API] Update club budget error: {$e->getMessage()}");
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
     }
