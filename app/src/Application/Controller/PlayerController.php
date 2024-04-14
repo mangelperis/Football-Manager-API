@@ -124,7 +124,7 @@ class PlayerController extends AbstractFOSRestController
             $validate = $validator->validate($data, $constraints);
 
             //Return validation errors
-            if(null !== $this->responseHandler->returnValidationErrorsResponse($validate)){
+            if (null !== $this->responseHandler->returnValidationErrorsResponse($validate)) {
                 return $this->responseHandler->returnValidationErrorsResponse($validate);
             }
 

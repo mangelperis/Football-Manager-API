@@ -6,12 +6,19 @@ namespace App\Application\Service\Handler;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ResponseHandler
 {
+    public function __construct(
+        private SerializerInterface $serializer,
+    )
+    {
+    }
+
     /**
-     * @param $data
+     * @param string $message
      * @param int $statusCode
      * @return JsonResponse
      */
@@ -26,7 +33,7 @@ class ResponseHandler
         return $response;
     }
 
-    /** ONLY FOR POST / CREATE ELEMENTS
+    /** ONLY FOR POST / CREATE ELEMENTS includes Location Header
      * @param $data
      * @param string $type
      * @param int $statusCode
@@ -67,24 +74,13 @@ class ResponseHandler
 
     /**
      * @param array $DTO
-     * @param string|null $key
      * @return JsonResponse
      */
-    public function createDtoResponse(array $DTO, string $key = null): JsonResponse
+    public function createDtoResponse(array $DTO): JsonResponse
     {
-        $items = [];
-        //DTO must have toArray method
-        foreach ($DTO as $value) {
-            $items[] = $value->toArray();
-        }
-        $data = [];
-        if (null === $key) {
-            $data = $items;
-        } else {
-            $data = [
-                "{$key}" => $items
-            ];
-        }
+        //DTO must have toArray method defined
+        //This changes the DTO element order, sadly
+        $data = $this->serializer->normalize($DTO);
 
         $response = new JsonResponse($data, Response::HTTP_OK);
 

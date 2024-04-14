@@ -14,8 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class CoachController extends AbstractFOSRestController
@@ -180,7 +180,6 @@ class CoachController extends AbstractFOSRestController
             $filterName = $request->query->get('name', '');
 
             $coachListDTOs = $this->coachService->getCoachesByClub($clubId, $page, $limit, $filterName);
-
             return $this->responseHandler->createDtoResponse($coachListDTOs);
 
         } catch (\InvalidArgumentException|\LogicException $e) {
