@@ -10,9 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 class JsonSchemaValidationTest extends TestCase
 {
-    private  JsonSchemaValidator $clubValidator;
-    private  JsonSchemaValidator $playerValidator;
-    private  JsonSchemaValidator $coachValidator;
+    private JsonSchemaValidator $clubValidator;
+    private JsonSchemaValidator $playerValidator;
+    private JsonSchemaValidator $coachValidator;
 
     protected function setUp(): void
     {
@@ -41,14 +41,15 @@ class JsonSchemaValidationTest extends TestCase
      */
     public function testPlayerNotValid(): void
     {
-        //Bad position
+        //Bad position and email
         $data = json_encode([
             'name' => 'John Doe',
             'position' => 'DEFENDER',
-            'email' => 'john@example.com',
+            'email' => 'xxx',
         ]);
 
         $this->assertFalse($this->playerValidator->validate($data));
+        $this->assertCount(2, $this->playerValidator->getErrors());
     }
 
     /**
@@ -78,6 +79,7 @@ class JsonSchemaValidationTest extends TestCase
         ]);
 
         $this->assertFalse($this->coachValidator->validate($data));
+        $this->assertCount(1, $this->coachValidator->getErrors());
     }
 
     /**
