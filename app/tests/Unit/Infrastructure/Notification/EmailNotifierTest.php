@@ -10,16 +10,20 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EmailNotifierTest extends TestCase
 {
     private MailerInterface $mailer;
     private EmailNotifier $emailNotifier;
+    private ValidatorInterface $validator;
+
 
     protected function setUp(): void
     {
         $this->mailer = $this->createMock(MailerInterface::class);
-        $this->emailNotifier = new EmailNotifier($this->mailer);
+        $this->validator = $this->createMock(ValidatorInterface::class);
+        $this->emailNotifier = new EmailNotifier($this->mailer, $this->validator);
     }
 
 
@@ -29,20 +33,21 @@ class EmailNotifierTest extends TestCase
     public function testNotify(): void
     {
         $recipientEmail = 'recipient@example.com';
+        $senderEmail = 'noreply@footballmanager.com';
         $subject = 'Subject';
         $body = 'Body';
 
         $email = (new Email())
-            ->from('noreply@footballmanager.com')
+            ->from($senderEmail)
             ->to($recipientEmail)
             ->subject($subject)
             ->text($body);
 
         $this->mailer->expects($this->once())
             ->method('send')
-            ->with($this->equalTo($email));
+            ->with($email);
 
-        $result = $this->emailNotifier->notify($recipientEmail, $subject, $body);
+        $result = $this->emailNotifier->notify($recipientEmail,$senderEmail, $subject, $body);
         $this->assertTrue($result);
     }
 }

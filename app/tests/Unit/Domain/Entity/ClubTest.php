@@ -18,12 +18,14 @@ class ClubTest extends TestCase
         $club->setShortname('TCB');
         $club->setCountry('US');
         $club->setBudget(1000000.0);
+        $club->setEmail('club@mail.com');
 
         $this->assertInstanceOf(Club::class, $club);
         $this->assertEquals('Test Club', $club->getName());
         $this->assertEquals('TCB', $club->getShortname());
         $this->assertEquals('US', $club->getCountry());
         $this->assertEquals(1000000.0, $club->getBudget());
+        $this->assertEquals('club@mail.com', $club->getEmail());
     }
 
     public function testAddRemovePlayer(): void
