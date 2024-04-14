@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
+use App\Application\DTO\PlayerDTO;
 use App\Domain\Entity\Club;
 use App\Domain\Entity\Player;
 use App\Domain\Repository\NotifierInterface;
@@ -201,13 +202,42 @@ class PlayerService
      * @param int $clubId
      * @param int $page
      * @param int $limit
-     * @param string $filter
+     * @param string $name
      * @return array
+     * @throws Exception
      */
-    public function getPlayersByClub(int $clubId, int $page, int $limit, string $filter): array
+    public function getPlayersByClub(int $clubId, int $page, int $limit, string $name): array
     {
-        return [];
-        //   return $this->playerRepository->findByClub($clubId, $page, $limit, $filter);
+        try {
+            $club = $this->clubRepository->find($clubId);
+
+            if(!$club){
+                throw new \InvalidArgumentException('Club not found.', Response::HTTP_NOT_FOUND);
+            }
+
+            $players = $this->playerRepository->findByClub($clubId, $page, $limit, $name);
+
+            if(!$players){
+                return [];
+            }
+
+            return array_map(function ($player) {
+                return new PlayerDTO(
+                    $player->getId(),
+                    $player->getName(),
+                    $player->getPosition(),
+                    $player->getSalary(),
+                    $player->getEmail(),
+                );
+            }, $players);
+
+        } catch (\InvalidArgumentException|\LogicException  $exception) {
+            throw new \InvalidArgumentException($exception->getMessage(), $exception->getCode());
+
+        } catch (Exception $exception) {
+            $this->logger->error(sprintf("[SERVICE] Get Club Players fail: %s", $exception->getMessage()));
+            throw new Exception('Error while fetching Club Players');
+        }
     }
 
 }

@@ -66,6 +66,33 @@ class ResponseHandler
     }
 
     /**
+     * @param array $DTO
+     * @param string|null $key
+     * @return JsonResponse
+     */
+    public function createDtoResponse(array $DTO, string $key = null): JsonResponse
+    {
+        $items = [];
+        //DTO must have toArray method
+        foreach ($DTO as $value) {
+            $items[] = $value->toArray();
+        }
+        $data = [];
+        if (null === $key) {
+            $data = $items;
+        } else {
+            $data = [
+                "{$key}" => $items
+            ];
+        }
+
+        $response = new JsonResponse($data, Response::HTTP_OK);
+
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
+    /**
      * @param ConstraintViolationListInterface $validate
      * @return JsonResponse|null
      */

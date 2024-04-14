@@ -162,7 +162,31 @@ class PlayerController extends AbstractFOSRestController
     }
 
 
+    /**
+     * @param Request $request
+     * @param int $clubId
+     * @return JsonResponse
+     * @throws Exception
+     */
+    #[Route('/club/{clubId}/players', name: 'list_club_players', methods: ['GET'])]
+    public function listClubPlayers(Request $request, int $clubId): JsonResponse
+    {
+        try {
+            $page = $request->query->getInt('page', 1);
+            $limit = $request->query->getInt('limit', 10);
+            $name = $request->query->get('name', '');
 
+            $playerListDTOs = $this->playerService->getPlayersByClub($clubId, $page, $limit, $name);
+
+            return $this->responseHandler->createDtoResponse($playerListDTOs);
+
+        } catch (\InvalidArgumentException|\LogicException $e) {
+            return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error("[API] Fetch Club Players error: {$e->getMessage()}");
+            return $this->responseHandler->returnErrorResponse('Something went wrong');
+        }
+    }
 
 
 }

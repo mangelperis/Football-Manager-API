@@ -53,4 +53,29 @@ class PlayerRepositoryDoctrineAdapter extends EntityRepository implements SaveIn
             return false;
         }
     }
+
+    /**
+     * @param int $clubId
+     * @param int $page
+     * @param int $limit
+     * @param string $filter
+     * @return array
+     */
+    public function findByClub(int $clubId, int $page, int $limit, string $filter): array
+    {
+
+        $queryBuilder = $this->createQueryBuilder('player')
+            ->where('player.club = :clubId')
+            ->setParameter('clubId', $clubId)
+            ->orderBy('player.name', 'ASC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        if (!empty($filter)) {
+            $queryBuilder->andWhere('player.name LIKE :filter')
+                ->setParameter('filter', '%' . $filter . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
