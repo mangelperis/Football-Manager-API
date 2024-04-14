@@ -108,4 +108,23 @@ class ClubController extends AbstractFOSRestController
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
     }
+
+    #[Route('/club/{clubId}/details', name: 'get_club_details', methods: ['GET'])]
+    public function fetchClubDetails(int $clubId): JsonResponse
+    {
+        try {
+            /** @var array $clubDetailsDTO */
+            $clubDetailsDTO = $this->clubService->getClubDetails($clubId);
+
+            return $this->responseHandler->createDtoResponse($clubDetailsDTO);
+        } catch
+        (\InvalidArgumentException|\LogicException $e) {
+            return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error("[API] Fetch club details error: {$e->getMessage()}");
+            return $this->responseHandler->returnErrorResponse('Something went wrong');
+        }
+    }
+
+
 }

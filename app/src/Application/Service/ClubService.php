@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
+use App\Application\DTO\ClubDetailsDTO;
+use App\Application\DTO\ClubDTO;
 use App\Domain\Entity\Club;
-use App\Domain\Repository\NotifierInterface;
 use App\Infrastructure\Persistence\Doctrine\ClubRepositoryDoctrineAdapter;
-use App\Infrastructure\Persistence\Doctrine\PlayerRepositoryDoctrineAdapter;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ClubService
 {
     public function __construct(
-        private LoggerInterface                 $logger,
-        private ValidatorInterface              $validator,
-        private PlayerRepositoryDoctrineAdapter $playerRepository,
-        private ClubRepositoryDoctrineAdapter   $clubRepository,
-        private NotifierInterface               $notifier,
+        private LoggerInterface               $logger,
+        private ClubRepositoryDoctrineAdapter $clubRepository,
+        private CoachService                  $coachService,
+        private PlayerService                 $playerService,
     )
     {
     }
@@ -121,4 +119,53 @@ class ClubService
 
         return $totalSalaries;
     }
+
+
+    /**
+     * @param int $clubId
+     * @return array
+     * @throws Exception
+     */
+    public function getClubDetails(int $clubId): array
+    {
+        try {
+            // Retrieve the club data and create a ClubDTO
+            /** @var Club $club */
+            $club = $this->clubRepository->find($clubId);
+            if (!$club) {
+                throw new \InvalidArgumentException('Club not found.', Response::HTTP_NOT_FOUND);
+            }
+
+            $clubDTO = new ClubDTO(
+                $club->getId(),
+                $club->getName(),
+                $club->getShortname(),
+                $club->getCountry(),
+                $club->getBudget(),
+                $club->getEmail(),
+            );
+
+            // Retrieve the players and coaches DTO
+            $playersDTO = $this->playerService->getPlayersByClub($clubId);
+            $coachesDTO = $this->coachService->getCoachesByClub($clubId);
+
+
+            $clubDetailsDTO = new ClubDetailsDTO(
+                $clubDTO,
+                $coachesDTO,
+                $playersDTO
+            );
+
+            //Match expected array from createDtoResponse
+            return [$clubDetailsDTO];
+        } catch (\InvalidArgumentException|\LogicException  $exception) {
+            throw new \InvalidArgumentException($exception->getMessage(), $exception->getCode());
+
+        } catch (Exception $exception) {
+            $this->logger->error(sprintf("[SERVICE] Get Club Details fail: %s", $exception->getMessage()));
+            throw new Exception('Error while fetching Club Details');
+        }
+
+    }
+
 }
