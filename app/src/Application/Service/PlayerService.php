@@ -48,6 +48,10 @@ class PlayerService
             $player->setName($data['name']);
             $player->setPosition($data['position']);
 
+            if(!$this->validator->validate($player)){
+                throw new \LogicException('Player is not valid.', Response::HTTP_BAD_REQUEST);
+            }
+
             $result = $this->playerRepository->save($player);
 
             if ($result) {
@@ -125,12 +129,6 @@ class PlayerService
 
             $club->setBudget($newBalance);
 
-            //Validation of entities before any change
-            if (!$this->validator->validate($player) || !$this->validator->validate($club)) {
-                $this->logger->notice(sprintf("[SERVICE] Invalid Player [%s]-[%s]", $player->getName(), $player->getClub()->toString()));
-                throw new \LogicException('Invalid Player data.', Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
             $this->playerRepository->save($player);
             $this->clubRepository->save($club);
 
@@ -143,7 +141,7 @@ class PlayerService
             $this->logger->log(0, sprintf("[NOTIFY] Mail Sent to [%s]", $player->getEmail()));
 
         } catch (\InvalidArgumentException|\LogicException  $exception) {
-            throw new Exception($exception->getMessage(), $exception->getCode());
+            throw new \LogicException($exception->getMessage(), $exception->getCode());
         } catch (Exception $exception) {
             $this->logger->error(sprintf("[SERVICE] Player attach fail: %s", $exception->getMessage()));
             throw new Exception('Error while attaching player to a Club');

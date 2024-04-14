@@ -14,9 +14,15 @@ class ResponseHandler
      * @param int $statusCode
      * @return JsonResponse
      */
-    public function createResponse($data, int $statusCode = Response::HTTP_OK): JsonResponse
+    public function createResponse(string $message, int $statusCode = Response::HTTP_OK): JsonResponse
     {
-        return new JsonResponse($data, $statusCode, [], true);
+        $response = new JsonResponse(
+            ['message' => $message],
+            $statusCode, []);
+
+        $response->headers->set('Content-Type', 'application/json');
+
+        return  $response;
     }
 
     /** ONLY FOR POST / CREATE ELEMENTS
