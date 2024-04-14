@@ -39,8 +39,10 @@ class PlayerController extends AbstractFOSRestController
         $this->logger = $logger;
     }
 
+
     /**
-     * @throws Exception
+     * @param Request $request
+     * @return JsonResponse
      */
     #[Route('/player', name: 'create_player', methods: ['POST'])]
     public function createPlayer(Request $request): JsonResponse
@@ -71,6 +73,10 @@ class PlayerController extends AbstractFOSRestController
 
     }
 
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
     #[Route('/player/{id}', name: 'delete_player', methods: ['DELETE'])]
     public function deletePlayer(int $id): JsonResponse
     {

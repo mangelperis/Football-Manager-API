@@ -45,6 +45,10 @@ class ClubController extends AbstractFOSRestController
         $this->logger = $logger;
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/club', name: 'create_club', methods: ['POST'])]
     public function createClub(Request $request): JsonResponse
     {
@@ -73,6 +77,12 @@ class ClubController extends AbstractFOSRestController
     }
 
 
+    /**
+     * @param Request $request
+     * @param int $clubId
+     * @param ValidatorInterface $validator
+     * @return JsonResponse
+     */
     #[Route('/club/{clubId}/player', name: 'attach_player_to_club', methods: ['POST'])]
     public function attachPlayerToClub(Request $request, int $clubId, ValidatorInterface $validator): JsonResponse
     {
@@ -119,6 +129,26 @@ class ClubController extends AbstractFOSRestController
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
             $this->logger->error("[API] Attach player to club error: {$e->getMessage()}");
+            return $this->responseHandler->returnErrorResponse('Something went wrong');
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param int $playerId
+     * @return JsonResponse
+     */
+    #[Route('/player/{playerId}/club', name: 'remove_player_from_club', methods: ['DELETE'])]
+    public function removePlayerFromClub(Request $request, int $playerId): JsonResponse
+    {
+        try {
+            $this->playerService->removeFromClub($playerId);
+
+            return $this->responseHandler->createResponse('Player removed from club successfully');
+        } catch (\InvalidArgumentException|\LogicException $e) {
+            return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error("[API] Remove player from club error: {$e->getMessage()}");
             return $this->responseHandler->returnErrorResponse('Something went wrong');
         }
     }
