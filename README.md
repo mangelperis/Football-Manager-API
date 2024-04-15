@@ -123,7 +123,7 @@ Check the running containers by using the command: ``docker ps``
 
 #### API
 Use Postman or another CLI to perform actions on each endpoint.
-A [postman collection]() is provided with the project with the source data endpoint and the destination one.
+A [postman collection](https://github.com/mangelperis/Football-Manager-API/blob/main/Football_Manager_API.postman_collection.json) is provided with the project with the source data endpoint and the destination one.
 
 The list of available endpoints can be shown by executing (target **php-fpm** or **php-apache** container):
 ```
