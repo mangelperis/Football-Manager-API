@@ -85,7 +85,6 @@ The following key features are implemented
 #### Logic
 * Persist data only if it doesn't exist, update fields if it does (*Create* endpoints).
 * Transform stored data to DTO, and then normalize it with a serializer.
-* Normalize the stored data to JSON response with a serializer.
 * Adapters and Ports. Change of stack easily by only adapting the Infrastructure layer.
   * Service gets the injection of the Interface instead of the Service class, so he doesn't know the type of source/end.
   * Notifier for Email sender, or the ResponseHandler for JSON responses
