@@ -179,7 +179,14 @@ class PlayerController extends AbstractFOSRestController
 
             $playerListDTOs = $this->playerService->getPlayersByClub($clubId, $page, $limit, $filterName);
 
-            return $this->responseHandler->createDtoResponse($playerListDTOs);
+            //value must be of type array|string|null
+            $metaHeaders = [
+                "Path" => "/player/{$clubId}/players",
+                "Page" => strval($page),
+                "Per-Page" => strval($limit),
+                "Total-Results" => strval(count($playerListDTOs))
+            ];
+            return $this->responseHandler->createDtoResponse($playerListDTOs, $metaHeaders);
 
         } catch (\InvalidArgumentException|\LogicException $e) {
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());

@@ -77,7 +77,7 @@ class ResponseHandler implements ResponseHandlerInterface
      * @param array $DTO
      * @return JsonResponse
      */
-    public function createDtoResponse(mixed $DTO): JsonResponse
+    public function createDtoResponse(mixed $DTO, array $meta = []): JsonResponse
     {
         //DTO must have toArray method defined
         //This changes the DTO element order, sadly
@@ -87,6 +87,13 @@ class ResponseHandler implements ResponseHandlerInterface
         $response = new JsonResponse($data, Response::HTTP_OK);
 
         $response->headers->set('Content-Type', 'application/json');
+
+        // Add meta data as headers
+        foreach ($meta as $key => $value) {
+            //dd($key,$value);
+            $headerName = 'X-' . ucfirst($key);
+            $response->headers->set($headerName, $value);
+        }
         return $response;
     }
 

@@ -181,7 +181,14 @@ class CoachController extends AbstractFOSRestController
             $filterName = $request->query->get('name', '');
 
             $coachListDTOs = $this->coachService->getCoachesByClub($clubId, $page, $limit, $filterName);
-            return $this->responseHandler->createDtoResponse($coachListDTOs);
+
+            $metaHeaders = [
+                "Path" => "/club/{$clubId}/coaches",
+                "Page" => strval($page),
+                "Per-Page" => strval($limit),
+                "Total-Results" => strval(count($coachListDTOs))
+            ];
+            return $this->responseHandler->createDtoResponse($coachListDTOs, $metaHeaders);
 
         } catch (\InvalidArgumentException|\LogicException $e) {
             return $this->responseHandler->returnErrorResponse($e->getMessage(), $e->getCode());
