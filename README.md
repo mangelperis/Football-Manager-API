@@ -23,9 +23,9 @@
 ## Description
 Symfony mini-application with REST API that manages football clubs, players, and coaches.
 Resources provided:
-* [Database dump](https://github.com/mangelperis/Football-Manager-API/blob/main/databaseFM.sql)
+* [Full Database dump with data](https://github.com/mangelperis/Football-Manager-API/blob/main/databaseFM.sql)
 * [Postman Collection](https://github.com/mangelperis/Football-Manager-API/blob/main/Football_Manager_API.postman_collection.json), Check [API](#api) section for more details.
-* [Sample SQL Table Inserts](https://github.com/mangelperis/Football-Manager-API/blob/main/sampleSQLInserts.sql)
+* [Sample SQL Table Inserts](https://github.com/mangelperis/Football-Manager-API/blob/main/app/migrations/sampleSQLInserts.sql), Check [here](#important) how to use it easily. 
 
 ***
 
@@ -182,6 +182,10 @@ docker exec -t php-fpm php bin/console doctrine:migrations:migrate --env=dev --n
 ```
 docker exec -t php-fpm php bin/console doctrine:database:create --env=test --no-interaction
 docker exec -t php-fpm php bin/console doctrine:migrations:migrate --env=test --no-interaction
+```
+Then you can load sample SQL data provided either by using `composer run import-data` or by executing :
+```
+docker exec -t php-fpm php bin/console app:import-sql migrations/sampleSQLInserts.sql
 ```
 
 After booting the container, you can use this command to enter inside it and execute commands (the container's name is defined in the _**docker-compose.yml**_ file):

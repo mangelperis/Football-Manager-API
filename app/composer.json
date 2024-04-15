@@ -93,6 +93,9 @@
         ],
         "test": [
             "docker exec -t php-fpm vendor/bin/phpunit --verbose"
+        ],
+        "import-data": [
+            "docker exec -t php-fpm php bin/console app:import-sql migrations/sampleSQLInserts.sql"
         ]
     },
     "conflict": {
