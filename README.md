@@ -97,7 +97,6 @@ The following key features are implemented
 ### Possible improvements
 * Some required composer packages have version conflicts with the newest Symfony releases. I had to downgrade from SF 7 to 6.4 because of it. Maybe substitute these packages for others.
 * Some logic from the services, could be transferred to the infrastructure layer in an adapter, it wasn't done to not add extra complexity.
-* An output **DTO** should be used to return data results in the **CustomBookingNormalizer**, to standardize the desired output against any client.
 * Some **constants** defined should be retrieved from the cache system, database, or the `.env`, so they would be easier to set on demand.
 * The pagination provided for some endpoints is basic, implement a proper metadata return to the user also.
 
@@ -196,7 +195,7 @@ or identify the name of it displayed under the column `NAMES` of this command ou
 ```
 docker ps
 ```
-There's an alias being created upon the build process, and it will allow you to execute the Symfony command directly only with `sf`. Example:
+There's **an alias** being created upon the build process, and it will allow you to execute the Symfony command directly only with `sf`. Example:
 ```
 sf debug:router
 ```
