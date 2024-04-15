@@ -132,7 +132,7 @@ The following key features are implemented
 ## Getting Started
 Copy or rename the `.env.dist` files (for docker and symfony) to an environment variable file and edit the entries to your needs:
 ```
-cp ./app/.env.dist .env && cp ./docker/.env.dist .env
+cp ./app/.env.dist ./app/.env && cp .env.dist .env
 ```
 
 ### Run using composer
@@ -152,6 +152,7 @@ composer run [
     cache-clear       --- Execute Symfony clear cache command.
     stan              --- Execute PHPStan analyse command.
     test              --- Execute PHPUnit test cases.    
+    import-data       --- Import MySQL sample data.    
 ]
 ```
 
@@ -183,7 +184,7 @@ docker exec -t php-fpm php bin/console doctrine:migrations:migrate --env=dev --n
 docker exec -t php-fpm php bin/console doctrine:database:create --env=test --no-interaction
 docker exec -t php-fpm php bin/console doctrine:migrations:migrate --env=test --no-interaction
 ```
-Then you can load sample SQL data provided either by using `composer run import-data` or by executing :
+Then you can **load sample SQL data** provided either by using `composer run import-data` or by executing :
 ```
 docker exec -t php-fpm php bin/console app:import-sql migrations/sampleSQLInserts.sql
 ```
