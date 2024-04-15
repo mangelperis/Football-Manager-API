@@ -74,7 +74,7 @@ The following key features are implemented
 * Manual logging and Exceptions catching during the service and controller process.
   * Log critical exceptions, like code errors, and return generic response messages like 'Something went wrong' to the API client to not provide details. 
   * Return bad logic or invalid format input to the client with the reason and details, so they can correct it.
-  ![img.png](img.png)
+  ![validation-errors.png](validation-errors.png)
 * Return to the API client proper JSON responses, and HTTP codes along custom headers like:
   * Location when creating a new register, being able to track its `id` for follow-up queries.
   ![header-location.png](header-location.png)
