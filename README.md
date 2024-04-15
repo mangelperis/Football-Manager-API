@@ -3,6 +3,10 @@
 ## Table of Contents
 
 - [Description](#description)
+  - [Strategy](#strategy)
+    - [Structure design](#design-and-principles)
+  - [Features](#features)
+  - [Improvements](#possible-improvements)
 - [Infrastructure](#infrastructure-used)
   - [Symfony Packages](#installed-symfony-packages)
 - [Getting Started](#getting-started)
@@ -17,7 +21,88 @@
 - [Troubleshooting](#troubleshooting)
 
 ## Description
-With this Docker-Symfony-Stack boilerplate, it's possible to set up a local development environment in seconds.
+Symfony mini-application with REST API that manages football clubs, players, and coaches.
+Resources provided:
+* [Database dump](https://github.com/mangelperis/Football-Manager-API/blob/main/databaseFM.sql)
+* [Postman Collection](https://github.com/mangelperis/Football-Manager-API/blob/main/Football_Manager_API.postman_collection.json), Check [API](#api) section for more details.
+* [Sample SQL Table Inserts](https://github.com/mangelperis/Football-Manager-API/blob/main/sampleSQLInserts.sql)
+
+***
+
+### Strategy
+API implementation with Controllers that call Services.
+Repository Pattern, along with DTOs, dependency injection, validation, logging, and other best practices helps create a modular, maintainable, and testable architecture for the Symfony API.
+The business logic is kept separate from the data access and infrastructure concerns.
+
+#### Design and Principles
+The project structure follows the **hexagonal architecture** of Application, Domain, and Infrastructure.
+
+Design patterns used:
+- Dependency Injection (*any Service*)
+- Entities (*Coach, Player, Club*)
+- Repository (*ClubRepositoryDoctrineAdapter, CoachRepositoryDoctrineAdapter, PlayerRepositoryDoctrineAdapter*)
+- Factory (*ResponseHandler*)
+- Data Transfer Objects (*DTO*)
+- Exception Handling (*InvalidArgumentException and LogicException*)
+- Interfaces contract that allows easy implementation substitution (*NotifierInterface*)
+
+Design principles used:
+- Single Responsibility principle (SRP)
+- Dependency Inversion (DI)
+- DRY
+- Serialize plus Normalize
+
+### Features
+The following key features are implemented
+#### MailCatcher
+* [MailCatcher](http://localhost:1080) is a tool used for intercepting and capturing emails during the development and testing of applications.
+![mailcatcher.png](mailcatcher.png)
+
+#### Project
+* The project is prepared to manage that a Club can have (1:N) multiple Employees (Coach & Player), because of the ArrayCollection implementation.
+* The club budget - employee salary implementation ensures realistic finance control while signing or laying off people.
+  * Implemented notify system by mail. Clubs send emails to their players and coaches when signing or laying off them.
+* Input body validation with *[Json-Schema](https://json-schema.org/)* ensuring mandatory required fields and type & length. 
+  * Fields like [Player](https://github.com/mangelperis/Football-Manager-API/blob/main/app/src/Infrastructure/Validation/Schemas/player.json)->position or [Coach](https://github.com/mangelperis/Football-Manager-API/blob/main/app/src/Infrastructure/Validation/Schemas/coach.json)->role are always the expected ones from a list.
+* Property validation (mostly the type) for the Entities before persisting them, including:
+  * Assert `email` validation.
+  * Club `country` value to mandatory follow the  [country alpha-2 ISO.](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+  * Timestamps. Automated creation of `created` and `updated` table columns.
+* Ensure any input data is validated, either using JSON-schema or Asserts.
+
+#### Good practices
+* Manual logging and Exceptions catching during the service and controller process.
+  * Log critical exceptions, like code errors, and return generic response messages like 'Something went wrong' to the API client to not provide details. 
+  * Return bad logic or invalid format input to the client with the reason and details, so they can correct it.
+  ![img.png](img.png)
+* Return to the API client proper JSON responses, and HTTP codes along custom headers like:
+  * Location when creating a new register, being able to track its `id` for follow-up queries.
+  ![header-location.png](header-location.png)
+  * Metadata like page, limit, or total results
+  ![header-meta.png](header-meta.png)
+* Defined individual DTO objects for the Entities, so they could be merged with any desired resourced response. An example of this is the `get_club_details` service, which merges the Club, Coaches, and Players DTO.
+
+#### Logic
+* Persist data only if it doesn't exist, update fields if it does (*Create* endpoints).
+* Transform stored data to DTO, and then normalize it with a serializer.
+* Normalize the stored data to JSON response with a serializer.
+* Adapters and Ports. Change of stack easily by only adapting the Infrastructure layer.
+  * Service gets the injection of the Interface instead of the Service class, so he doesn't know the type of source/end.
+  * Notifier for Email sender, or the ResponseHandler for JSON responses
+    * Exception are the *DoctrineRepositories* for MySQL databases, they were injected directly so the extended EntityService queries like `find` could be used.
+      *  These repositories implement the interfaces for their expected operations: save, update, delete, etc...
+
+#### Performance
+* It takes an average of 20 to 30ms to process any request. 
+
+### Possible improvements
+* Some required composer packages have version conflicts with the newest Symfony releases. I had to downgrade from SF 7 to 6.4 because of it. Maybe substitute these packages for others.
+* Some logic from the services, could be transferred to the infrastructure layer in an adapter, it wasn't done to not add extra complexity.
+* An output **DTO** should be used to return data results in the **CustomBookingNormalizer**, to standardize the desired output against any client.
+* Some **constants** defined should be retrieved from the cache system, database, or the `.env`, so they would be easier to set on demand.
+* The pagination provided for some endpoints is basic, implement a proper metadata return to the user also.
+
+***
 
 ## Infrastructure used
 * Symfony 7
@@ -35,7 +120,7 @@ With this Docker-Symfony-Stack boilerplate, it's possible to set up a local deve
 * **symfony/http-client**: HTTP client for making HTTP requests and interacting with web services.
 * **symfony/validator**: tools for validating data according to predefined rules.
 * **symfony/maker-bundle**: facilitates rapid development by automating the creation of boilerplate code.
-* **phpstan/phpstan**: analysis tool for PHP code, to detect and fix issues,
+* **phpstan/phpstan**: an analysis tool for PHP code, to detect and fix issues,
 * **friendsofsymfony/rest-bundle**: simplifies the implementation of RESTful APIs.
 * **symfony/serializer**: serialization system for converting between objects and arrays, to JSON, XML, YAML, and CSV.
 * **stof/doctrine-extensions-bundle**: doctrine extensions, features to ORM entities (Timestampable)
@@ -47,8 +132,7 @@ With this Docker-Symfony-Stack boilerplate, it's possible to set up a local deve
 ## Getting Started
 Copy or rename the `.env.dist` files (for docker and symfony) to an environment variable file and edit the entries to your needs:
 ```
-cp ./app/.env.dist .env
-cp ./docker/.env.dist .env
+cp ./app/.env.dist .env && cp ./docker/.env.dist .env
 ```
 
 ### Run using composer
@@ -129,19 +213,25 @@ The list of available endpoints can be shown by executing (target **php-fpm** or
 ```
 docker exec php-fpm php bin/console debug:router
 ```
-Provided endpoints are (Example):
+Provided endpoints are:
 ```
-GET|HEAD  api/user/all                  List all users
-POST      api/user/create               Create a new user   
-PUT       api/user/{user}               Update user by ID
-DELETE    api/user/{user}               (Soft) Delete a user by ID
-GET|HEAD  api/user/{user}               Show user data by ID
-GET|HEAD  api/user/{user}/workentry     List all user WorkEntries by UserID
+  Name                      Method    Path                         
+ ------------------------- --------  ----------------------------- 
+   
+  create_club               POST     /api/club                    
+  update_club_budget        PUT      /api/club/{clubId}/budget    
+  get_club_details          GET      /api/club/{clubId}/details   
+  create_coach              POST     /api/coach                   
+  delete_coach              DELETE   /api/coach/{id}              
+  attach_coach_to_club      POST     /api/club/{clubId}/coach     
+  remove_coach_from_club    DELETE   /api/coach/{coachId}/club    
+  list_club_coaches         GET      /api/club/{clubId}/coaches   
+  create_player             POST     /api/player                  
+  delete_player             DELETE   /api/player/{id}             
+  attach_player_to_club     POST     /api/club/{clubId}/player    
+  remove_player_from_club   DELETE   /api/player/{playerId}/club  
+  list_club_players         GET      /api/club/{clubId}/players   
 
-POST      api/workentry/create          Create a new WorkEntry
-PUT       api/workentry/{workentry}     Update WorkEntry by ID
-DELETE    api/workentry/{workentry}     Delete WorkEntry by ID
-GET|HEAD  api/workentry/{workentry}     Show WorkEntry Data by ID
 ```
 
 #### PHPUnit Testing
